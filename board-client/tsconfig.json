@@ -20,7 +20,8 @@
       "@/*": ["./src/*", "./dist/*", ""],
       "pages/*": ["src/pages/*"],
       "components/*": ["src/components/*"],
-      "hooks/*": ["src/hooks/*"]
+      "hooks/*": ["src/hooks/*"],
+      "stores/*": ["src/stores/*"]
     }
   },
   "include": ["src"],

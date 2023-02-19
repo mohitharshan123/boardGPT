@@ -18,6 +18,7 @@ type InputProps = {
   >;
   errors?: FieldErrors<FieldValues>;
   className?: string;
+  otherProps: any;
 };
 
 const Input: React.FC<InputProps> = ({
@@ -28,6 +29,7 @@ const Input: React.FC<InputProps> = ({
   rules,
   errors,
   className,
+  otherProps,
 }) => (
   <>
     <Controller

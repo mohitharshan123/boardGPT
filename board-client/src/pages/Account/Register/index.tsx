@@ -6,6 +6,9 @@ import { Input } from "components";
 import { useRegister } from "hooks/requests/useAccountApi";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import jwt_decode from "jwt-decode";
+import { LoginResponse } from "components/Login";
+import useAuthStore from "@/stores/useAuthStore";
 
 type RegisterProps = {
   showLogin: () => void;
@@ -13,8 +16,9 @@ type RegisterProps = {
 type Credentials = { username: string; password: string };
 
 const Register: React.FC<RegisterProps> = ({ showLogin }) => {
-  const { mutate: registerUser, isLoading } = useRegister();
+  const { mutate: registerUser } = useRegister();
   const navigate = useNavigate();
+  const { setUser } = useAuthStore();
 
   const {
     handleSubmit,
@@ -24,7 +28,9 @@ const Register: React.FC<RegisterProps> = ({ showLogin }) => {
 
   const onSubmit = (values: Credentials) =>
     registerUser(values, {
-      onSuccess: () => {
+      onSuccess: (values: LoginResponse) => {
+        const user = jwt_decode(values.access);
+        setUser(user);
         toast.success("Successfully registered user");
         navigate(routes.dashboard);
       },
@@ -52,7 +58,7 @@ const Register: React.FC<RegisterProps> = ({ showLogin }) => {
             className="mt-4"
             prefix={<MdOutlineMail />}
             name="username"
-            rules={{ required: true }}
+            rules={{ required: "Username is required" }}
             placeholder="Enter your username"
             control={control}
             errors={errors}
@@ -62,7 +68,7 @@ const Register: React.FC<RegisterProps> = ({ showLogin }) => {
           <Input
             prefix={<RiLockPasswordLine />}
             name="password"
-            rules={{ required: true }}
+            rules={{ required: "Password is required" }}
             placeholder="Enter your password"
             control={control}
             errors={errors}

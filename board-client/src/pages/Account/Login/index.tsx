@@ -1,20 +1,25 @@
 import { MdOutlineMail } from "react-icons/md";
 import { RiLockPasswordLine } from "react-icons/ri";
 import { useForm } from "react-hook-form";
+import jwt_decode from "jwt-decode";
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 import { Input } from "components";
 import routes from "@/routes";
 import { useLogin } from "hooks/requests/useAccountApi";
-import { toast } from "react-toastify";
-import { useNavigate } from "react-router-dom";
+import useAuthStore from "stores/useAuthStore";
 
 type LoginProps = {
   showRegister: () => void;
 };
-type Credentials = { username: string; password: string };
+export type Credentials = { username: string; password: string };
+
+export type LoginResponse = { access: string; refresh: string };
 
 const Login: React.FC<LoginProps> = ({ showRegister }) => {
-  const { mutate: loginUser, isLoading } = useLogin();
+  const { mutate: loginUser } = useLogin();
+  const { setUser } = useAuthStore();
   const navigate = useNavigate();
 
   const {
@@ -25,9 +30,11 @@ const Login: React.FC<LoginProps> = ({ showRegister }) => {
 
   const onSubmit = (values: Credentials) =>
     loginUser(values, {
-      onSuccess: () => {
-        toast.success("Success!");
-        navigate(routes.dashboard);
+      onSuccess: (values: LoginResponse) => {
+        const user = jwt_decode(values.access);
+        setUser(user);
+        toast.success("Succcessfully logged in!");
+        setTimeout(() => navigate(routes.dashboard), 500);
       },
       onError: () => toast.error("Invalid credentials"),
     });
