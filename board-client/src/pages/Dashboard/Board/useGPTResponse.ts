@@ -8,13 +8,11 @@ const useGPTResponse = (prompt: PromptProps) => {
   const { data: card } = useShowCard(prompt.cardId);
   const [chatGPTResponse, setChatGPTResponse] = useState("");
   const { mutate: updateCard } = useUpdateCard();
-
   const chatGPTResponseRef = useRef(chatGPTResponse);
 
-  useEffect(
-    () => setChatGPTResponse(card?.completion ?? ""),
-    [prompt.taskId, card]
-  );
+  useEffect(() => {
+    setChatGPTResponse(card?.completion ?? "");
+  }, [prompt, card]);
 
   useEffect(() => {
     if (!prompt.taskId || !prompt.cardId || !card) return;
@@ -46,7 +44,7 @@ const useGPTResponse = (prompt: PromptProps) => {
     !card.completion && fetchData();
   }, [prompt, card]);
 
-  return { chatGPTResponse, setChatGPTResponse };
+  return { chatGPTResponse, setChatGPTResponse, chatGPTResponseRef };
 };
 
 export default useGPTResponse;

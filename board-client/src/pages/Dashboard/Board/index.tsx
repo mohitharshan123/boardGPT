@@ -43,7 +43,8 @@ const Board = () => {
     reset,
   } = useForm();
 
-  const { chatGPTResponse, setChatGPTResponse } = useGPTResponse(prompt);
+  const { chatGPTResponse, setChatGPTResponse, chatGPTResponseRef } =
+    useGPTResponse(prompt);
 
   const handleCreateCard = (taskId: string, values: FieldValues) => {
     createTask(
@@ -91,7 +92,12 @@ const Board = () => {
           order: destination.index,
         },
       },
-      { onSuccess: () => setChatGPTResponse("") }
+      {
+        onSuccess: () => {
+          chatGPTResponseRef.current = "";
+          setChatGPTResponse("");
+        },
+      }
     );
   };
 
