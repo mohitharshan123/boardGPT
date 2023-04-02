@@ -1,12 +1,13 @@
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import { BiMessageSquareAdd } from "react-icons/bi";
 import { AiOutlineMinusCircle } from "react-icons/ai";
-import { Button } from "antd";
+import { Button, Modal } from "antd";
 
 import { useGetBoard, useCreateCard } from "hooks/requests/useBoardApi";
 import { useState } from "react";
 import { FieldValues, useForm } from "react-hook-form";
 import TextArea from "@/components/TextArea";
+import useGPTResponse from "./useGPTResponse";
 
 type DragEndProps = {
   destination: any;
@@ -15,17 +16,28 @@ type DragEndProps = {
   setTasks: React.Dispatch<React.SetStateAction<Array<any>>>;
 };
 
+export type PromptProps = {
+  taskId: string;
+  cardId: string;
+};
+
+const PROMPT_INITIAL_VALUE: PromptProps = { taskId: "", cardId: "" };
+
 const Board = () => {
   const [isAddCardInputOpen, setIsAddCardInputOpen] = useState<any>({});
 
   const { data: { tasks } = {}, isLoading, setTasks } = useGetBoard();
   const { mutate: createTask, isLoading: isCreatingTask } = useCreateCard();
+  const [prompt, setPrompt] = useState<PromptProps>(PROMPT_INITIAL_VALUE);
+
   const {
     handleSubmit,
     formState: { errors },
     control,
     reset,
   } = useForm();
+
+  const { chatGPTResponse, setChatGPTResponse } = useGPTResponse(prompt);
 
   const handleCreateCard = (taskId: string, values: FieldValues) => {
     createTask(
@@ -82,7 +94,7 @@ const Board = () => {
             className="flex flex-row shadow-md rounded-lg w-full p-4 m-2 bg-gray-200 h-screen"
             key={task.id}
           >
-            <div className="flex flex-col w-80">
+            <div className="flex flex-col w-full">
               <div className="flex flex-row justify-between">
                 <span className="font-bold text-lg">{task.prompt}</span>
                 {!!isAddCardInputOpen[task.id] ? (
@@ -149,6 +161,9 @@ const Board = () => {
                       >
                         {(provided: any) => (
                           <div
+                            onClick={() =>
+                              setPrompt({ taskId: task.id, cardId: card.id })
+                            }
                             ref={provided.innerRef}
                             {...provided.draggableProps}
                             {...provided.dragHandleProps}
@@ -167,6 +182,16 @@ const Board = () => {
           </div>
         ))}
       </DragDropContext>
+      <Modal
+        open={!!prompt.taskId}
+        footer={null}
+        onCancel={() => {
+          setPrompt(PROMPT_INITIAL_VALUE);
+          setChatGPTResponse("");
+        }}
+      >
+        <span>{chatGPTResponse}</span>
+      </Modal>
     </div>
   );
 };

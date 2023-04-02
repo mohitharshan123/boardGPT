@@ -4,6 +4,7 @@ import { QUERY_KEYS } from "../../apis/constants";
 
 const useLogin = () => useMutation(login);
 const useRegister = () => useMutation(register);
+
 const useUpdateUser = () => {
   const queryClient = useQueryClient();
   return useMutation(updateUser, {
