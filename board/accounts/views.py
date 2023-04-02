@@ -6,6 +6,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 from .models import BoardUser
+from cards.models import Board
 from django.contrib.auth import authenticate
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
@@ -18,6 +19,7 @@ class RegisterView(generics.GenericAPIView):
         if username and password:
             try:
                 user = BoardUser.objects.create(username=username, password=password)
+                Board.objects.create(created_by=user)
                 refresh = RefreshToken.for_user(user)
                 return Response({
                     'refresh': str(refresh),

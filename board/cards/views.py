@@ -6,7 +6,7 @@ from rest_framework.decorators import api_view
 from rest_framework_simplejwt.backends import TokenBackend
 
 from rest_framework import viewsets
-from rest_framework.generics import CreateAPIView, UpdateAPIView
+from rest_framework.generics import CreateAPIView, UpdateAPIView, RetrieveUpdateAPIView
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
 from .models import Board, Task, Card, BoardUser
@@ -15,8 +15,6 @@ from cards.models import Board
 from .serializers import BoardSerializer, CardSerializer, TaskSerializer
 
 import openai
-# Create your views here.
-
 
 class BoardView(viewsets.ModelViewSet):
     model = Board
@@ -38,6 +36,7 @@ class BoardView(viewsets.ModelViewSet):
 class TaskCreateView(CreateAPIView):
     queryset = Task.objects.all()
     serializer_class = TaskSerializer
+    authentication_classes = [JWTAuthentication]
 
 class TaskUpdateView(UpdateAPIView):
     queryset = Task.objects.all()
@@ -47,7 +46,7 @@ class CardCreateView(CreateAPIView):
     queryset = Card.objects.all()
     serializer_class = CardSerializer
 
-class CardUpdateView(UpdateAPIView):
+class CardUpdateView(RetrieveUpdateAPIView):
     queryset = Card.objects.all()
     serializer_class = CardSerializer
 
@@ -76,10 +75,8 @@ def stream(request):
                 yield 'data: %s\n\n' % line.choices[0].text
         except IndexError:
             yield 'data: Authorization header is missing or invalid\n\n'
-        except (KeyError, ValueError, TokenBackendError, BoardUser.DoesNotExist, Task.DoesNotExist, Card.DoesNotExist):
+        except (KeyError, ValueError, BoardUser.DoesNotExist, Task.DoesNotExist, Card.DoesNotExist):
             yield 'data: Invalid request parameters\n\n'
-        except OpenAIError as e:
-            yield 'data: OpenAI API error: %s\n\n' % str(e)
         except Exception as e:
             yield 'data: Internal server error: %s\n\n' % str(e)
             raise

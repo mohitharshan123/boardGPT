@@ -13,7 +13,7 @@ const useGetBoard = () => {
 
   useEffect(() => {
     if (isLoading) return;
-    setTasks(data.tasks);
+    setTasks(data?.tasks);
   }, [data, isLoading]);
 
   return { data: { tasks }, setTasks, isLoading };
@@ -43,9 +43,20 @@ const useCreateCard = () => {
 const useUpdateCard = () => {
   const queryClient = useQueryClient();
   return useMutation(boardApi.updateCard, {
-    onSuccess: () => queryClient.invalidateQueries(QUERY_KEYS.board),
+    onSuccess: (_, { id }) => {
+      queryClient.invalidateQueries(QUERY_KEYS.board);
+      queryClient.invalidateQueries([QUERY_KEYS.card, id]);
+    },
   });
 };
+
+const useShowCard = (id) =>
+  useQuery([QUERY_KEYS.card, id], () => boardApi.showCard(id), {
+    staleTime: 100_000_000,
+    refetchOnWindowFocus: false,
+    enabled: !!id,
+    select: (response) => response.data,
+  });
 
 export {
   useGetBoard,
@@ -53,4 +64,5 @@ export {
   useUpdateTask,
   useCreateCard,
   useUpdateCard,
+  useShowCard,
 };
