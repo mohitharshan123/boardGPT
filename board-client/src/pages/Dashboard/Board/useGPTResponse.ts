@@ -8,11 +8,15 @@ const useGPTResponse = (prompt: PromptProps) => {
   const { data: card } = useShowCard(prompt.cardId);
   const [chatGPTResponse, setChatGPTResponse] = useState("");
   const { mutate: updateCard } = useUpdateCard();
-  const chatGPTResponseRef = useRef(chatGPTResponse);
+  const chatGPTResponseRef = useRef("");
 
   useEffect(() => {
     setChatGPTResponse(card?.completion ?? "");
   }, [prompt, card]);
+
+  useEffect(() => {
+    chatGPTResponseRef.current = chatGPTResponse;
+  }, [chatGPTResponse]);
 
   useEffect(() => {
     if (!prompt.taskId || !prompt.cardId || !card) return;
@@ -26,7 +30,6 @@ const useGPTResponse = (prompt: PromptProps) => {
           },
           onmessage({ data }) {
             setChatGPTResponse((response) => response + data);
-            chatGPTResponseRef.current += data;
           },
           onclose() {
             if (chatGPTResponse.current?.includes("Internal server error"))
