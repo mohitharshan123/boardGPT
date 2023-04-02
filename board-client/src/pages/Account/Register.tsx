@@ -32,7 +32,7 @@ const Register: React.FC<RegisterProps> = ({ showLogin }) => {
         const user = jwt_decode(values.access);
         setUser(user);
         toast.success("Successfully registered user");
-        navigate(routes.dashboard);
+        navigate(routes.dashboard.index);
       },
       onError: () => toast.error("An error occuurred"),
     });

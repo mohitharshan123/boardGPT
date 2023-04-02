@@ -7,7 +7,7 @@ import {
 } from "react-hook-form";
 import { Input as AntDInput } from "antd";
 
-type InputProps = {
+export type InputProps = {
   control: Control<FieldValues, any>;
   name: string;
   placeholder?: string;
@@ -18,7 +18,7 @@ type InputProps = {
   >;
   errors?: FieldErrors<FieldValues>;
   className?: string;
-  otherProps: any;
+  rows?: integer;
 };
 
 const Input: React.FC<InputProps> = ({
@@ -29,7 +29,7 @@ const Input: React.FC<InputProps> = ({
   rules,
   errors,
   className,
-  otherProps,
+  ...otherProps
 }) => (
   <>
     <Controller
@@ -42,6 +42,7 @@ const Input: React.FC<InputProps> = ({
           placeholder={placeholder}
           prefix={prefix}
           className={className}
+          {...otherProps}
         />
       )}
     />

@@ -2,8 +2,20 @@
 from django.db import models
 from accounts.models import BoardUser
 
-class Card(models.Model):
-    user = models.ForeignKey(BoardUser, on_delete=models.CASCADE)
+
+class Task(models.Model):
     prompt = models.TextField(max_length=320)
-    content = models.TextField()
-    completion = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+class Card(models.Model):
+    task = models.ForeignKey(Task, on_delete=models.CASCADE)
+    text = models.TextField(max_length=320)
+    completion = models.TextField(null=True, blank=True)
+    order = models.IntegerField()
+
+class Board(models.Model):
+    created_by = models.ForeignKey(BoardUser, on_delete=models.CASCADE)
+    tasks = models.ManyToManyField(Task)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)

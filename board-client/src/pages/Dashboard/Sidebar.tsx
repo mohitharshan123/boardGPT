@@ -1,61 +1,63 @@
-import React, { useState } from "react";
-import { DesktopOutlined, PieChartOutlined } from "@ant-design/icons";
-import type { MenuProps } from "antd";
-import { Breadcrumb, Layout, Menu, theme } from "antd";
-
-const { Header, Content, Sider } = Layout;
-
-type MenuItem = Required<MenuProps>["items"][number];
-
-const getItem = (
-  label: React.ReactNode,
-  key: React.Key,
-  icon?: React.ReactNode,
-  children?: MenuItem[]
-): MenuItem => {
-  return {
-    key,
-    icon,
-    children,
-    label,
-  } as MenuItem;
-};
-
-const items: MenuItem[] = [
-  getItem("Board", "1", <PieChartOutlined />),
-  getItem("Settings", "2", <DesktopOutlined />),
-];
+import React from "react";
+import { SiFlipboard } from "react-icons/si";
+import { BiLogOut } from "react-icons/bi";
+import { FiSettings } from "react-icons/fi";
+import Logo from "@/assets/Logo";
+import { logout } from "@/apis/account";
+import { useNavigate } from "react-router-dom";
+import routes from "@/routes";
 
 const Sidebar: React.FC = () => {
-  const [isCollapsed, setIsCollapsed] = useState(false);
-  const {
-    token: { colorBgContainer },
-  } = theme.useToken();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate(routes.account);
+  };
 
   return (
-    <Layout className="h-screen">
-      <Sider
-        collapsible
-        collapsed={isCollapsed}
-        onCollapse={(value) => setIsCollapsed(value)}
-      >
-        <Menu
-          theme="dark"
-          defaultSelectedKeys={["1"]}
-          mode="inline"
-          items={items}
-        />
-      </Sider>
-      <Layout>
-        <Header style={{ padding: 0, background: colorBgContainer }} />
-        <Content>
-          <Breadcrumb className="ml-4">
-            <Breadcrumb.Item>User</Breadcrumb.Item>
-            <Breadcrumb.Item>Bill</Breadcrumb.Item>
-          </Breadcrumb>
-        </Content>
-      </Layout>
-    </Layout>
+    <div className="min-h-screen flex flex-row bg-gray-100">
+      <div className="flex flex-col w-56 bg-white overflow-hidden shadow-md">
+        <div className="flex items-center justify-center h-20 shadow-sm p-20">
+          <Logo />
+        </div>
+        <ul className="flex flex-col py-4">
+          <li>
+            <a
+              onClick={() => navigate(routes.dashboard.index)}
+              className="flex cursor-pointer flex-row items-center h-12  text-gray-500 hover:text-gray-800"
+            >
+              <span className="inline-flex items-center justify-center h-12 w-12 text-lg text-gray-400">
+                <SiFlipboard />
+              </span>
+              <span className="text-sm font-medium">Board</span>
+            </a>
+          </li>
+          <li>
+            <a
+              onClick={() => navigate(routes.dashboard.settings)}
+              className="flex flex-row items-center cursor-pointer h-12  text-gray-500 hover:text-gray-800"
+            >
+              <span className="inline-flex items-center justify-center h-12 w-12 text-lg text-gray-400">
+                <FiSettings />
+              </span>
+              <span className="text-sm font-medium">Settings</span>
+            </a>
+          </li>
+          <li>
+            <a
+              onClick={handleLogout}
+              className="flex flex-row items-center h-12 cursor-pointer  text-gray-500 hover:text-gray-800"
+            >
+              <span className="inline-flex items-center justify-center h-12 w-12 text-lg text-gray-400">
+                <BiLogOut />
+              </span>
+              <span className="text-sm font-medium">Logout</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
   );
 };
 

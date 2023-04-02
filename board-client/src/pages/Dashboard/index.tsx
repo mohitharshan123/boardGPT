@@ -1,7 +1,7 @@
 import routes from "@/routes";
 import useAuthStore from "@/stores/useAuthStore";
 import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 import Sidebar from "./Sidebar";
 
 const Dashboard: React.FC = () => {
@@ -14,8 +14,9 @@ const Dashboard: React.FC = () => {
   }, [localStorage]);
 
   return (
-    <div>
+    <div className="flex flex-row">
       <Sidebar />
+      <Outlet />
     </div>
   );
 };

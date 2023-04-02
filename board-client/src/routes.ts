@@ -1,6 +1,6 @@
 const routes = {
   account: "/",
-  dashboard: "/dashboard",
+  dashboard: { index: "/dashboard", settings: "/dashboard/settings" },
 };
 
 export default routes;

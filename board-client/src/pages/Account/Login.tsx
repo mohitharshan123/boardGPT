@@ -34,7 +34,7 @@ const Login: React.FC<LoginProps> = ({ showRegister }) => {
         const user = jwt_decode(values.access);
         setUser(user);
         toast.success("Succcessfully logged in!");
-        setTimeout(() => navigate(routes.dashboard), 500);
+        setTimeout(() => navigate(routes.dashboard.index), 500);
       },
       onError: () => toast.error("Invalid credentials"),
     });
@@ -74,6 +74,7 @@ const Login: React.FC<LoginProps> = ({ showRegister }) => {
             placeholder="Enter your password"
             control={control}
             errors={errors}
+            type="password"
           />
         </div>
         <button
